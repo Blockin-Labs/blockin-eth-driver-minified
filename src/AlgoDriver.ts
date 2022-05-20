@@ -1,6 +1,6 @@
 import algosdk, { decodeAddress, Transaction } from 'algosdk';
 import nacl from 'tweetnacl';
-import { CreateAssetParams, CreateTransferAssetParams, IChainDriver, UniversalTxn } from 'blockin-test-package';
+import { CreateAssetParams, CreateTransferAssetParams, IChainDriver, UniversalTxn } from 'blockin';
 import { Buffer } from 'buffer';
 
 type CreateContractOptInParams = {
