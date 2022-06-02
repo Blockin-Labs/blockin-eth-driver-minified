@@ -1,7 +1,7 @@
 import { CreateAssetParams, CreateTransferAssetParams, IChainDriver, UniversalTxn } from 'blockin';
 import { recoverPersonalSignature } from 'eth-sig-util';
 import { ethers } from 'ethers';
-import Moralis from "moralis/node";
+import Moralis from "moralis/node.js";
 import { Buffer } from 'buffer';
 
 interface MoralisDetails {
@@ -123,7 +123,7 @@ export default class EthDriver implements IChainDriver {
             sig: signed,
         });
 
-        if (recoveredAddr !== originalAddress) {
+        if (recoveredAddr.toLowerCase() !== originalAddress.toLowerCase()) {
             throw `Signature Invalid: Expected ${originalAddress} but got ${recoveredAddr}`
         }
     }
