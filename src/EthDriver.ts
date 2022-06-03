@@ -28,8 +28,7 @@ export default class EthDriver implements IChainDriver {
             appId: '',
             masterKey: ''
         };
-
-        Moralis.start(this.moralisDetails);
+        if (MORALIS_DETAILS) Moralis.start(this.moralisDetails);
     }
 
     /** Boilerplates - Not Implemented Yet */
@@ -139,6 +138,8 @@ export default class EthDriver implements IChainDriver {
                 assetIds.push(assetId);
             }
         }
+
+        if (assetIds.length === 0) return;
 
         const options = {
             address

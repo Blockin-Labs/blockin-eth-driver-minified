@@ -1,6 +1,6 @@
 {
   "name": "blockin-eth-driver",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "description": "",
   "type": "module",
   "main": "dist/EthDriver.js",
