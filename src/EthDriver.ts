@@ -47,7 +47,7 @@ export default class EthDriver implements IChainDriver {
         return;
     }
 
-    async getChallengeStringFromBytesToSign(txnBytes: Uint8Array) {
+    async parseChallengeStringFromBytesToSign(txnBytes: Uint8Array) {
         const txnString = new TextDecoder().decode(txnBytes);
         const txnString2 = Buffer.from(txnString.substring(2), "hex").toString();
 
@@ -127,7 +127,7 @@ export default class EthDriver implements IChainDriver {
         }
     }
 
-    async verifyOwnershipOfAssets(address: string, resources: string[], assetMinimumBalancesMap?: any, defaultMinimum?: number) {
+    async verifyOwnershipOfAssets(address: string, resources: string[], assetMinimumBalancesRequiredMap?: any, defaultMinimum?: number) {
         if (!resources || resources.length == 0) return;
 
         let assetIds: string[] = [];
@@ -154,7 +154,7 @@ export default class EthDriver implements IChainDriver {
         for (let i = 0; i < assetIds.length; i++) {
             const assetId = assetIds[i];
             const defaultBalance = defaultMinimum ? defaultMinimum : 1;
-            const minimumAmount = assetMinimumBalancesMap && assetMinimumBalancesMap[assetId] ? assetMinimumBalancesMap[assetId] : defaultBalance;
+            const minimumAmount = assetMinimumBalancesRequiredMap && assetMinimumBalancesRequiredMap[assetId] ? assetMinimumBalancesRequiredMap[assetId] : defaultBalance;
 
             const requestedAsset = assets?.find((elem: any) => elem['asset-id'].toString() === assetId);
             if (!requestedAsset) {
