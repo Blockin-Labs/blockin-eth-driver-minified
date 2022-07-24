@@ -21,14 +21,18 @@ interface MoralisDetails {
  */
 export default class EthDriver implements IChainDriver {
     moralisDetails: MoralisDetails;
+    chain: "eth" | "bsc" | "polygon" | "avalanche" | "fantom" | "cronos"
 
-    constructor(chain: string, MORALIS_DETAILS?: MoralisDetails) {
+    constructor(chain?: any, MORALIS_DETAILS?: MoralisDetails) {
         this.moralisDetails = MORALIS_DETAILS ? MORALIS_DETAILS : {
             serverUrl: '',
             appId: '',
             masterKey: ''
         };
+
         if (MORALIS_DETAILS) Moralis.start(this.moralisDetails);
+
+        this.chain = chain;
     }
 
     /** Boilerplates - Not Implemented Yet */
@@ -56,6 +60,7 @@ export default class EthDriver implements IChainDriver {
 
     async lookupTransactionById(txnId: string) {
         const options = {
+            chain: this.chain,
             transaction_hash: txnId,
         };
         const transaction = await Moralis.Web3API.native.getTransaction(options);
@@ -64,6 +69,7 @@ export default class EthDriver implements IChainDriver {
 
     async getAssetDetails(assetId: string | Number): Promise<any> {
         const options = {
+            chain: this.chain,
             addresses: [`${assetId}`],
         };
         const tokenMetadata = await Moralis.Web3API.token.getTokenMetadata(options);
@@ -72,6 +78,7 @@ export default class EthDriver implements IChainDriver {
 
     async getAllAssetsForAddress(address: string): Promise<any> {
         const options = {
+            chain: this.chain,
             address
         };
 
@@ -86,7 +93,9 @@ export default class EthDriver implements IChainDriver {
 
         const lastBlockHash = lastBlock['block'];
 
-        const options = { block_number_or_hash: `${lastBlockHash}` };
+        const options = {
+            chain: this.chain, block_number_or_hash: `${lastBlockHash}`
+        };
 
         // get block content on BSC
         const transactions = await Moralis.Web3API.native.getBlock(options);
@@ -96,7 +105,10 @@ export default class EthDriver implements IChainDriver {
     }
 
     async getTimestampForBlock(blockIndexStr: string): Promise<string> {
-        const options = { block_number_or_hash: `${blockIndexStr}` };
+        const options = {
+            chain: this.chain,
+            block_number_or_hash: `${blockIndexStr}`
+        };
 
         const transactions = await Moralis.Web3API.native.getBlock(options);
 
@@ -142,6 +154,7 @@ export default class EthDriver implements IChainDriver {
         if (assetIds.length === 0) return;
 
         const options = {
+            chain: this.chain,
             address
         };
         const assets = (await Moralis.Web3API.account.getNFTs(options)).result;
@@ -156,7 +169,7 @@ export default class EthDriver implements IChainDriver {
             const defaultBalance = defaultMinimum ? defaultMinimum : 1;
             const minimumAmount = assetMinimumBalancesRequiredMap && assetMinimumBalancesRequiredMap[assetId] ? assetMinimumBalancesRequiredMap[assetId] : defaultBalance;
 
-            const requestedAsset = assets?.find((elem: any) => elem['asset-id'].toString() === assetId);
+            const requestedAsset = assets?.find((elem: any) => elem['token_address'].toString() === assetId);
             if (!requestedAsset) {
                 throw `Address ${address} does not own requested asset : ${assetId}`;
             }
