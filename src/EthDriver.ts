@@ -1,14 +1,8 @@
 import { CreateAssetParams, CreateTransferAssetParams, IChainDriver, UniversalTxn } from 'blockin';
 import { recoverPersonalSignature } from 'eth-sig-util';
 import { ethers } from 'ethers';
-import Moralis from "moralis/node.js";
 import { Buffer } from 'buffer';
 
-interface MoralisDetails {
-    serverUrl: string;
-    appId: string;
-    masterKey: string;
-}
 
 /**
  * Ethereum implementation of the IChainDriver interface. This implementation is based off the Moralis API
@@ -20,18 +14,9 @@ interface MoralisDetails {
  * this logic for creating / verifying challenges. Before using,ou will have to setChainDriver(new EthDriver(.....)) first.
  */
 export default class EthDriver implements IChainDriver {
-    moralisDetails: MoralisDetails;
     chain: "eth" | "bsc" | "polygon" | "avalanche" | "fantom" | "cronos"
 
-    constructor(chain?: any, MORALIS_DETAILS?: MoralisDetails) {
-        this.moralisDetails = MORALIS_DETAILS ? MORALIS_DETAILS : {
-            serverUrl: '',
-            appId: '',
-            masterKey: ''
-        };
-
-        if (MORALIS_DETAILS) Moralis.start(this.moralisDetails);
-
+    constructor(chain?: any) {
         this.chain = chain;
     }
 
@@ -59,60 +44,23 @@ export default class EthDriver implements IChainDriver {
     }
 
     async lookupTransactionById(txnId: string) {
-        const options = {
-            chain: this.chain,
-            transaction_hash: txnId,
-        };
-        const transaction = await Moralis.Web3API.native.getTransaction(options);
-        return transaction;
+        throw 'Not implemented';
     }
 
     async getAssetDetails(assetId: string | Number): Promise<any> {
-        const options = {
-            chain: this.chain,
-            addresses: [`${assetId}`],
-        };
-        const tokenMetadata = await Moralis.Web3API.token.getTokenMetadata(options);
-        return tokenMetadata;
+        throw 'Not implemented';
     }
 
     async getAllAssetsForAddress(address: string): Promise<any> {
-        const options = {
-            chain: this.chain,
-            address
-        };
-
-        const accountAssets = await Moralis.Web3API.account.getNFTs(options);
-        return accountAssets['result'];
+        throw 'Not implemented';
     }
 
     async getLastBlockIndex(): Promise<string> {
-        const lastBlock = await Moralis.Web3API.native.getDateToBlock({
-            date: `${new Date()}`
-        });
-
-        const lastBlockHash = lastBlock['block'];
-
-        const options = {
-            chain: this.chain, block_number_or_hash: `${lastBlockHash}`
-        };
-
-        // get block content on BSC
-        const transactions = await Moralis.Web3API.native.getBlock(options);
-
-
-        return transactions['hash'];
+        throw 'Not implemented';
     }
 
     async getTimestampForBlock(blockIndexStr: string): Promise<string> {
-        const options = {
-            chain: this.chain,
-            block_number_or_hash: `${blockIndexStr}`
-        };
-
-        const transactions = await Moralis.Web3API.native.getBlock(options);
-
-        return transactions['timestamp'];
+        throw 'Not implemented';
     }
 
     isValidAddress(address: string): boolean {
@@ -140,48 +88,7 @@ export default class EthDriver implements IChainDriver {
     }
 
     async verifyOwnershipOfAssets(address: string, resources: string[], assetMinimumBalancesRequiredMap?: any, defaultMinimum?: number) {
-        if (!resources || resources.length == 0) return;
-
-        let assetIds: string[] = [];
-        if (resources) {
-            const filteredAssetIds = resources.filter(elem => elem.startsWith('Asset ID: '));
-            for (const assetStr of filteredAssetIds) {
-                const assetId = assetStr.substring(10);
-                assetIds.push(assetId);
-            }
-        }
-
-        if (assetIds.length === 0) return;
-
-        const options = {
-            chain: this.chain,
-            address
-        };
-        const assets = (await Moralis.Web3API.account.getNFTs(options)).result;
-
-        const assetLookupData = {
-            assetsForAddress: assets,
-            address,
-        };
-
-        for (let i = 0; i < assetIds.length; i++) {
-            const assetId = assetIds[i];
-            const defaultBalance = defaultMinimum ? defaultMinimum : 1;
-            const minimumAmount = assetMinimumBalancesRequiredMap && assetMinimumBalancesRequiredMap[assetId] ? assetMinimumBalancesRequiredMap[assetId] : defaultBalance;
-
-            const requestedAsset = assets?.find((elem: any) => elem['token_address'].toString() === assetId);
-            if (!requestedAsset) {
-                throw `Address ${address} does not own requested asset : ${assetId}`;
-            }
-            console.log(`Success: Found asset in user's wallet: ${assetId}.`);
-            console.log('ASSET DETAILS', requestedAsset);
-
-            if (requestedAsset['amount'] && requestedAsset['amount'] < minimumAmount) {
-                throw `Address ${address} only owns ${requestedAsset['amount']} and does not meet minimum balance requirement of ${minimumAmount} for asset : ${assetId}`;
-            }
-        }
-
-        return assetLookupData;
+        throw 'Not implemented';
     }
 
     /**
